@@ -2,9 +2,13 @@
 
 Portable Bash tooling for installing and using [google-java-format](https://github.com/google/google-java-format).
 
-## Install
+## Install / 安裝
+
+### Install the latest version / 安裝最新版
 
 The one-line installer downloads the versioned `java-format.sh` release asset to `~/.local/bin/java-format.sh`, then installs the latest google-java-format release for the current user.
+
+這行指令會下載已發佈版本的 `java-format.sh` 到 `~/.local/bin/java-format.sh`，再為目前使用者安裝最新版的 google-java-format。
 
 ```sh
 curl -fsSL https://github.com/samzhu/java-format-scripts/releases/latest/download/install.sh | bash
@@ -12,19 +16,31 @@ curl -fsSL https://github.com/samzhu/java-format-scripts/releases/latest/downloa
 
 The installer saves the script at a permanent path because `install-hook` records that path in the Git pre-commit hook. Do not run the main formatter only from a temporary directory.
 
+安裝程式會把腳本存放在固定路徑，因為 `install-hook` 會將該路徑寫入 Git pre-commit hook。請勿只從暫存目錄執行主腳本。
+
+### Pin google-java-format / 指定 google-java-format 版本
+
 To install a particular google-java-format version instead of its latest release:
+
+若不想安裝最新版，可在一鍵安裝指令最後指定 google-java-format 的版本：
 
 ```sh
 curl -fsSL https://github.com/samzhu/java-format-scripts/releases/latest/download/install.sh | bash -s -- --version 1.35.0
 ```
 
-To install a fixed version of this script, replace `latest` with a release tag such as `v1.0.0`:
+### Pin this installer / 指定本工具版本
+
+To install a fixed version of this script, replace `latest` with a release tag such as `v1.0.1`:
+
+若要固定此工具本身的版本，請把 `latest` 改成 Release tag，例如 `v1.0.1`：
 
 ```sh
-curl -fsSL https://github.com/samzhu/java-format-scripts/releases/download/v1.0.0/install.sh | bash
+curl -fsSL https://github.com/samzhu/java-format-scripts/releases/download/v1.0.1/install.sh | bash
 ```
 
 `curl | bash` executes remote code. Review the tagged release before running it in environments you do not control.
+
+`curl | bash` 會直接執行遠端程式碼；在非自行控制的環境執行前，請先檢閱指定版本的 Release 內容。
 
 ## Commands
 
@@ -55,7 +71,7 @@ curl -fsSL https://github.com/samzhu/java-format-scripts/releases/download/v1.0.
 3. Upload both shell files as assets with the same names:
 
    ```sh
-   gh release create v1.0.0 java-format.sh install.sh --title v1.0.0 --generate-notes
+   gh release create v1.0.1 java-format.sh install.sh --title v1.0.1 --generate-notes
    ```
 
 The `latest` installation URL works because GitHub provides a stable URL for a release asset with a fixed filename.
