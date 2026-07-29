@@ -79,6 +79,16 @@ java-format uninstall-hook
 - Intel Mac and other unsupported architectures use the all-deps JAR and require a JDK 21+.
 - The script defaults to the newest google-java-format release. It records the known version when the script was released at the top of `java-format.sh`.
 
+## Maintenance / 維護說明
+
+- Shell comments explain design and safety decisions, such as platform fallback, the stable hook launcher, and preserving partial staging; they intentionally do not narrate every line of syntax.
+- Runtime output reports command scope, file counts, installation targets, and hook changes. Detailed formatter output is shown only for errors or files that need attention.
+- Keep `install.sh`, `README.md`, and the Release assets in sync whenever changing the installer name, path, or Release tag.
+
+- Shell 註解用於說明平台 fallback、穩定 hook launcher、保留部分暫存等設計與安全原因，不逐行解釋語法。
+- 執行訊息會顯示命令範圍、檔案數量、安裝位置與 hook 變更；只有錯誤或需處理的檔案才會顯示 formatter 詳細輸出。
+- 修改安裝程式名稱、路徑或 Release tag 時，必須同步更新 `install.sh`、`README.md` 與 Release assets。
+
 ## Publishing a new script release
 
 1. Update `RELEASE_TAG` in `install.sh` to the new tag, then update the README's fixed-version example if needed.

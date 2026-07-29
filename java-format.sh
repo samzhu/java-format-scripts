@@ -2,6 +2,13 @@
 # google-java-format helper
 # Known google-java-format version when this script was released: 1.35.0
 # `install` resolves the latest GitHub release by default. Use --version to pin one.
+#
+# Maintenance notes:
+# - Formatter binaries live in a user-scoped cache, so installation never needs sudo.
+# - `diff --staged` and the pre-commit hook update only Git's index; they never stage
+#   unrelated working-tree edits from the same Java file.
+# - Runtime messages describe state changes and counts, while detailed formatter output
+#   remains available only when a command fails.
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -33,6 +40,7 @@ is_windows_shell() {
 }
 
 data_root() {
+  # Keep downloads outside the repository so one installation can serve many projects.
   local root
   if is_windows_shell && [ -n "${LOCALAPPDATA:-}" ]; then
     root="$LOCALAPPDATA"
@@ -99,6 +107,7 @@ resolve_latest_version() {
 }
 
 select_release_asset() {
+  # Native binaries avoid a Java dependency. The all-deps JAR is the portable fallback.
   local version="$1" os arch
   os="$(uname -s)"
   arch="$(uname -m)"
@@ -169,6 +178,7 @@ shell_quote() {
 }
 
 write_launcher() {
+  # Hooks call this stable launcher, while `current` selects the installed version.
   local launcher_tmp
   mkdir -p "$BIN_DIR"
   launcher_tmp="${LAUNCHER}.tmp.$$"
@@ -282,6 +292,7 @@ cmd_install() {
 JAVA_FILES=()
 
 collect_java_files() {
+  # NUL-delimited discovery preserves paths containing spaces and other shell characters.
   local input file
   JAVA_FILES=()
   for input in "$@"; do
@@ -305,7 +316,9 @@ format_java_files() {
     return 0
   }
   require_formatter
+  info "Formatting $# Java file(s)..."
   printf '%s\0' "$@" | xargs -0 -n 50 "$LAUNCHER" --replace
+  info "Finished formatting $# Java file(s)."
 }
 
 check_java_files() {
@@ -315,6 +328,7 @@ check_java_files() {
     return 0
   }
   require_formatter
+  info "Checking $# Java file(s)..."
 
   for file in "$@"; do
     output=""
@@ -336,7 +350,8 @@ cmd_format() {
     set -- .
   fi
   collect_java_files "$@"
-  format_java_files "${JAVA_FILES[@]}"
+  # Bash 3.2 treats an empty array as unset under `set -u`.
+  format_java_files "${JAVA_FILES[@]+"${JAVA_FILES[@]}"}"
 }
 
 git_root() {
@@ -379,6 +394,9 @@ format_staged_java_files() {
       exit 0
     }
     require_formatter
+    # Format a temporary copy of each staged blob, then update only the index entry.
+    # This is what preserves unstaged edits in a partially staged file.
+    info "Formatting $# staged Java file(s) in the Git index..."
     temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/google-java-format-hook.XXXXXX")"
     trap 'rm -rf "$temp_dir"' EXIT
 
@@ -395,6 +413,7 @@ format_staged_java_files() {
       printf '%s blob %s\t%s\0' "$mode" "$new_blob" "$local_path" | git update-index -z --index-info
       info "Formatted staged Java file: $local_path"
     done
+    info "Finished formatting staged Java files."
   )
 }
 
@@ -425,11 +444,16 @@ cmd_diff() {
   root="$(git_root)"
   (
     cd "$root"
+    case "$mode" in
+      worktree) info "Formatting Java files changed in the working tree..." ;;
+      staged) info "Formatting Java files staged for commit..." ;;
+      base) info "Formatting Java files changed since ${base}..." ;;
+    esac
     collect_diff_java_files "$mode" "$base"
     if [ "$mode" = "staged" ]; then
-      format_staged_java_files "${JAVA_FILES[@]}"
+      format_staged_java_files "${JAVA_FILES[@]+"${JAVA_FILES[@]}"}"
     else
-      format_java_files "${JAVA_FILES[@]}"
+      format_java_files "${JAVA_FILES[@]+"${JAVA_FILES[@]}"}"
     fi
   )
 }
@@ -444,7 +468,7 @@ cmd_check() {
     fi
   fi
   collect_java_files "$@"
-  if check_java_files "${JAVA_FILES[@]}"; then
+  if check_java_files "${JAVA_FILES[@]+"${JAVA_FILES[@]}"}"; then
     info "All checked Java files already match google-java-format."
   else
     exit 1
@@ -478,6 +502,7 @@ path_is_within() {
 }
 
 managed_hook_dir() {
+  # Do not write to a shared hooks directory configured outside this repository.
   local root="$1" git_dir configured requested canonical_root canonical_git_dir hook_dir
   git_dir="$(git rev-parse --git-dir)"
   case "$git_dir" in
@@ -608,7 +633,7 @@ cmd_hook_format_staged() {
   (
     cd "$root"
     collect_diff_java_files staged
-    format_staged_java_files "${JAVA_FILES[@]}"
+    format_staged_java_files "${JAVA_FILES[@]+"${JAVA_FILES[@]}"}"
   )
 }
 
@@ -657,4 +682,3 @@ main() {
 }
 
 main "$@"
-

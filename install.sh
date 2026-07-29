@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Bootstrap installer for java-format-scripts.
 # Update this tag whenever publishing a new GitHub Release.
+# This script is designed to be run through `curl | bash`, so it first saves the
+# main tool at a stable path. Git hooks must never point at a temporary download.
 
 set -euo pipefail
 
 readonly REPOSITORY="samzhu/java-format-scripts"
+# This must match the Release that contains both install.sh and java-format.sh.
 readonly RELEASE_TAG="1"
 readonly RELEASE_ASSET_URL="https://github.com/${REPOSITORY}/releases/download/${RELEASE_TAG}/java-format.sh"
 
@@ -37,6 +40,7 @@ esac
 command -v curl >/dev/null 2>&1 || die "curl is required. On macOS it is installed by default."
 
 install_dir="${JAVA_FORMAT_SCRIPTS_INSTALL_DIR:-${XDG_BIN_HOME:-${HOME}/.local/bin}}"
+# Install without a .sh suffix so the normal command is `java-format`.
 target="${install_dir}/java-format"
 mkdir -p "$install_dir"
 
@@ -47,6 +51,7 @@ cleanup() {
 trap cleanup EXIT
 
 info "Installing java-format ${RELEASE_TAG} to ${target}..."
+info "Downloading release asset: ${RELEASE_ASSET_URL}"
 curl --fail --silent --show-error --location --retry 3 --connect-timeout 15 \
   --output "$temporary" "$RELEASE_ASSET_URL" \
   || die "Could not download ${RELEASE_ASSET_URL}"
@@ -55,4 +60,5 @@ chmod +x "$temporary"
 mv -f "$temporary" "$target"
 trap - EXIT
 
+info "Saved java-format. Installing google-java-format..."
 exec "$target" install "$@"
