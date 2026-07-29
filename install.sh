@@ -22,7 +22,7 @@ usage() {
 Usage:
   curl -fsSL https://github.com/samzhu/java-format-scripts/releases/latest/download/install.sh | bash
 
-Arguments after the pipe are passed to `java-format.sh install`, for example:
+Arguments after the pipe are passed to `java-format install`, for example:
   curl -fsSL URL | bash -s -- --version 1.35.0
 EOF
 }
