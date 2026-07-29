@@ -37,16 +37,16 @@ esac
 command -v curl >/dev/null 2>&1 || die "curl is required. On macOS it is installed by default."
 
 install_dir="${JAVA_FORMAT_SCRIPTS_INSTALL_DIR:-${XDG_BIN_HOME:-${HOME}/.local/bin}}"
-target="${install_dir}/java-format.sh"
+target="${install_dir}/java-format"
 mkdir -p "$install_dir"
 
-temporary="$(mktemp "${install_dir}/.java-format.sh.XXXXXX")"
+temporary="$(mktemp "${install_dir}/.java-format.XXXXXX")"
 cleanup() {
   rm -f "$temporary"
 }
 trap cleanup EXIT
 
-info "Installing java-format.sh ${RELEASE_TAG} to ${target}..."
+info "Installing java-format ${RELEASE_TAG} to ${target}..."
 curl --fail --silent --show-error --location --retry 3 --connect-timeout 15 \
   --output "$temporary" "$RELEASE_ASSET_URL" \
   || die "Could not download ${RELEASE_ASSET_URL}"

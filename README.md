@@ -6,9 +6,9 @@ Portable Bash tooling for installing and using [google-java-format](https://gith
 
 ### Install the latest version / 安裝最新版
 
-The one-line installer downloads the versioned `java-format.sh` release asset to `~/.local/bin/java-format.sh`, then installs the latest google-java-format release for the current user.
+The one-line installer downloads the versioned `java-format.sh` release asset to `~/.local/bin/java-format`, then installs the latest google-java-format release for the current user.
 
-這行指令會下載已發佈版本的 `java-format.sh` 到 `~/.local/bin/java-format.sh`，再為目前使用者安裝最新版的 google-java-format。
+這行指令會下載已發佈版本的 `java-format.sh` 到 `~/.local/bin/java-format`，再為目前使用者安裝最新版的 google-java-format。
 
 ```sh
 curl -fsSL https://github.com/samzhu/java-format-scripts/releases/latest/download/install.sh | bash
@@ -42,15 +42,30 @@ curl -fsSL https://github.com/samzhu/java-format-scripts/releases/download/1/ins
 
 `curl | bash` 會直接執行遠端程式碼；在非自行控制的環境執行前，請先檢閱指定版本的 Release 內容。
 
+### Add the command to PATH / 將指令加入 PATH
+
+The installer uses `~/.local/bin`. If it is not already on your PATH, add it once for zsh:
+
+安裝程式使用 `~/.local/bin`。若此目錄尚未在 PATH 中，zsh 使用者可執行一次：
+
+```sh
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+You can then run `java-format format` from any directory.
+
+完成後，就能在任何目錄直接執行 `java-format format`。
+
 ## Commands
 
 ```sh
-~/.local/bin/java-format.sh install [--version <x.y.z>] [--force]
-~/.local/bin/java-format.sh format [path...]
-~/.local/bin/java-format.sh diff [--staged | --base <git-ref>]
-~/.local/bin/java-format.sh check [path...]
-~/.local/bin/java-format.sh install-hook
-~/.local/bin/java-format.sh uninstall-hook
+java-format install [--version <x.y.z>] [--force]
+java-format format [path...]
+java-format diff [--staged | --base <git-ref>]
+java-format check [path...]
+java-format install-hook
+java-format uninstall-hook
 ```
 
 - `format` recursively formats all `*.java` files below the supplied paths, excluding `.git`.
