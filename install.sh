@@ -5,7 +5,7 @@
 set -euo pipefail
 
 readonly REPOSITORY="samzhu/java-format-scripts"
-readonly RELEASE_TAG="v1.0.1"
+readonly RELEASE_TAG="1"
 readonly RELEASE_ASSET_URL="https://github.com/${REPOSITORY}/releases/download/${RELEASE_TAG}/java-format.sh"
 
 info() {

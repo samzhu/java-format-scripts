@@ -30,12 +30,12 @@ curl -fsSL https://github.com/samzhu/java-format-scripts/releases/latest/downloa
 
 ### Pin this installer / 指定本工具版本
 
-To install a fixed version of this script, replace `latest` with a release tag such as `v1.0.1`:
+To install a fixed version of this script, replace `latest` with a release tag such as `1`:
 
-若要固定此工具本身的版本，請把 `latest` 改成 Release tag，例如 `v1.0.1`：
+若要固定此工具本身的版本，請把 `latest` 改成 Release tag，例如 `1`：
 
 ```sh
-curl -fsSL https://github.com/samzhu/java-format-scripts/releases/download/v1.0.1/install.sh | bash
+curl -fsSL https://github.com/samzhu/java-format-scripts/releases/download/1/install.sh | bash
 ```
 
 `curl | bash` executes remote code. Review the tagged release before running it in environments you do not control.
@@ -71,7 +71,7 @@ curl -fsSL https://github.com/samzhu/java-format-scripts/releases/download/v1.0.
 3. Upload both shell files as assets with the same names:
 
    ```sh
-   gh release create v1.0.1 java-format.sh install.sh --title v1.0.1 --generate-notes
+   gh release create 1 java-format.sh install.sh --title 1 --generate-notes
    ```
 
 The `latest` installation URL works because GitHub provides a stable URL for a release asset with a fixed filename.
